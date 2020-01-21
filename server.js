@@ -6,26 +6,58 @@ var exphbs = require("express-handlebars");
 
 var app = express();
 
+var PORT = 3000;
+
+var db = require("./models");
+
+var app = express();
+
+// Connect to the Mongo DB
+mongoose.connect("mongodb://localhost/mongoHeadlines", { useNewUrlParser: true });
+
 /*=============================================
 =                 Routes                     =
 =============================================*/
 
 // A GET route for scraping the 'Next Web' website
-app.get("/scrape/page/:number?", function(req, res) {
-  var page = req.params.number || "";
-  axios.get("https://thenextweb.com/latest/page/" + page).then(function(response) {
-    var $ = cheerio.load(response.data);
-    let data = [];
-    $(".story").each(function(i, el){
-      var newsData = {};
-      newsData.date = $(this).find("time").attr("datetime");
-      newsData.imgUrl = $(this).children("a").data("src");
-      newsData.summary = $(this).find(".story-chunk").text().trim();
-      newsData.title = $(this).find(".story-title").text().trim();
-      newsData.url = $(this).find(".story-title > a").attr("href");
-      data.push(newsData);
-    });
-    res.json(data);
+app.get("/scrape", function(req, res) {
+	axios.get("https://thenextweb.com/latest/").then(function(response) {
+		var $ = cheerio.load(response.data);
+
+		$(".story").each(function(i, el) {
+      // Create object to store article data
+			var articleData = {};
+			articleData.date = $(this)
+				.find("time")
+				.attr("datetime");
+			articleData.imgUrl = $(this)
+				.children("a")
+				.data("src");
+			articleData.summary = $(this)
+				.find(".story-chunk")
+				.text()
+				.trim();
+			articleData.title = $(this)
+				.find(".story-title")
+				.text()
+				.trim();
+			articleData.url = $(this)
+				.find(".story-title > a")
+        .attr("href");
+        
+      // Save article to database
+			db.Article.create(articleData)
+				.then(article => console.log(article))
+				.catch(error => {
+          if (error.name === "MongoError" && error.code === 11000) {
+            // Log error message for articles duplicate titles
+						console.log(error.errmsg);
+					} else {
+						console.log(error);
+					}
+				});
+		});
+		res.send("Articles Added to DB");
 	});
 });
 
