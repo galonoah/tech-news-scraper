@@ -10,7 +10,15 @@ var PORT = 3000;
 
 var db = require("./models");
 
-var app = express();
+// Serve static content for the app from the "public" directory in the application directory.
+app.use(express.static("public"));
+
+// Parse request body as JSON
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
 
 // Connect to the Mongo DB
 mongoose.connect("mongodb://localhost/mongoHeadlines", { useNewUrlParser: true });
@@ -44,7 +52,7 @@ app.get("/scrape", function(req, res) {
 			articleData.url = $(this)
 				.find(".story-title > a")
         .attr("href");
-        
+
       // Save article to database
 			db.Article.create(articleData)
 				.then(article => console.log(article))
@@ -57,8 +65,24 @@ app.get("/scrape", function(req, res) {
 					}
 				});
 		});
-		res.send("Articles Added to DB");
+		res.redirect("/articles");
 	});
+});
+
+// Route for getting all Articles from the db
+app.get("/articles", function(req, res) {
+
+  db.Article.find({})
+    .then(articles => {
+      // Convert each article into javascript object to resolve issue:
+      // Handlebars: Access has been denied to resolve the property <field name> 
+      // because it is not an "own property" of its parent.
+      let articlesArray = [];
+      articles.forEach(article => articlesArray.push(article.toObject()));
+
+      res.render("index", {articles: articlesArray});
+    })
+    .catch(error => res.json(error));
 });
 
 app.listen(3000, function() {
