@@ -69,12 +69,12 @@ app.get("/scrape", function(req, res) {
 	});
 });
 
-// Route for getting all Articles from the db
+// Route for getting all Articles from mongoDB
 app.get("/articles", function(req, res) {
 
   db.Article.find({})
     .then(articles => {
-      // Convert each article into javascript object to resolve issue:
+      // Convert each article into a plain javascript object to resolve issue:
       // Handlebars: Access has been denied to resolve the property <field name> 
       // because it is not an "own property" of its parent.
       let articlesArray = [];
@@ -83,6 +83,33 @@ app.get("/articles", function(req, res) {
       res.render("index", {articles: articlesArray});
     })
     .catch(error => res.json(error));
+});
+
+// Route for grabbing a specific Article by id, populate it with its comments
+app.get("/articles/:id", function(req, res) {
+  db.Article.findOne({ _id: req.params.id })
+    .populate("comment")
+    .then(function(dbArticle) {
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
+});
+
+// Route for saving/updating an Article's associated Comment
+app.post("/articles/:id", function(req, res) {
+  console.log("post triggerd: ", req.params.id);
+  db.Comment.create(req.body)
+    .then(function(comment) {
+      return db.Article.findOneAndUpdate({ _id: req.params.id }, {$push: { comment: comment._id }}, { new: true });
+    })
+    .then(function(article) {
+      res.json(article);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
 });
 
 app.listen(3000, function() {

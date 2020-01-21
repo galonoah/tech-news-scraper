@@ -11,6 +11,11 @@
       <div class="article__summary">
         <p>{{this.summary}}</p>
       </div>
+      <form>
+        <label>Comment:</label>
+        <input type="text" class="comment">
+        <button class="saveComment" data-id={{this._id}}>Send</button>
+      </form>
     </div>
     {{/each}}
   </section>
