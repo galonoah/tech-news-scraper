@@ -21,7 +21,8 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // Connect to the Mongo DB
-mongoose.connect("mongodb://localhost/mongoHeadlines", { useNewUrlParser: true });
+mongoose.connect("mongodb://localhost/mongoHeadlines", { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true });
+
 
 /*=============================================
 =                 Routes                     =
@@ -31,22 +32,6 @@ mongoose.connect("mongodb://localhost/mongoHeadlines", { useNewUrlParser: true }
 app.get("/", function(req, res){
   res.redirect("/articles");
 });
-
-// // A Get route to to render users' articles
-// app.get("/user/:id", function(req, res){
-//   db.User.findOne({_id: req.params.id})
-//     .populate("articles")
-//     .then(function(userData){
-
-//       // let articlesArray = [];
-//       // userData.articles.forEach(article => articlesArray.push(article.toObject()));
-//       let articlesArray = userData.articles.map(article => article.toObject());
-// 			res.render("index", {articles: articlesArray});
-//     })
-//     .catch(function(error){
-//       console.log(error);
-//     });
-// });
 
 // User route
 app.post("/user", function(req, res){
@@ -98,8 +83,8 @@ app.get("/scrape", function(req, res) {
 						console.log(error);
 					}
 				});
-    })
-		res.redirect("/articles");
+		})
+		res.end();
 	});
 });
 
@@ -119,6 +104,7 @@ app.get("/articles", function(req, res) {
     .catch(error => res.json(error));
 });
 
+// Save Articles
 app.post("/articles/save", function(req, res){
 	db.User.findOneAndUpdate({ _id: req.body.userId }, { $push: { articles: req.body.articleId } }, { new: true })
 	.then(function(result){
@@ -130,13 +116,12 @@ app.post("/articles/save", function(req, res){
 	res.end();
 });
 
+// View Saved Articles
 app.get("/articles/save/user/:id", function(req, res){
 	db.User.findOne({_id: req.params.id})
 		.populate("articles")
 		.then(function(userArticles){
-    // console.log("TCL: userArticles", userArticles)
 			let articlesArray; 
-			
 			if (userArticles) {
 				 articlesArray = userArticles.articles.map(article => article.toObject()) || [];
 			} else {
@@ -148,6 +133,30 @@ app.get("/articles/save/user/:id", function(req, res){
 		.catch(function(error){
 			console.log(error);
 		});
+});
+
+// Remove articles from favorites
+app.put("/article/update", function(req, res){
+	//Find User ID and get user Data
+	db.User.findOne({_id: req.body.userId})
+		.then(function(userData){
+			// Loop through User's saved articles and remove/update articles array
+			userData.articles.forEach(function(article){
+				if (article.toString() === req.body.articleId) {
+					// Remove article
+					userData.articles.remove(req.body.articleId)
+					// Save updated articles array
+					userData.save(function(err, result){
+						if (err) throw err;
+						console.log("Removed Article id: " + req.body.articleId + " from User Id: " + req.body.userId);
+						res.end()
+					});
+				}
+			});
+	})
+	.catch(function(error){
+		console.log(error);
+	})
 });
 
 // Route for grabbing a specific Article by id, populate it with its comments

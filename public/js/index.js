@@ -1,5 +1,4 @@
 $(function() {
-	let areArticlesEmpty = $(".articles").children().length === 0;
 
 	if (localStorage.id) {
 		console.log("Get associated articles to user");
@@ -9,7 +8,7 @@ $(function() {
 			url: "/user"
 		}).then(function(result) {
 			localStorage.setItem("id", result._id);
-		});
+		})
 	}
 
 	$("#scrapeButton").on("click", function() {
@@ -17,11 +16,11 @@ $(function() {
 			method: "GET",
 			url: "/scrape"
 		}).then(function(result) {
-			console.log("Getting Articles...")
-			// window.location.href = "/user/" + localStorage.getItem("id");
+			location.reload();
 		});
 	});
 
+	// Save articles to favorites
 	$(".saveArticleButton").on("click", function(e){
 		e.preventDefault();
 
@@ -38,18 +37,27 @@ $(function() {
 			console.log("Article saved")
 		});
 	});
-
+	
+	// View Saved Articles
 	$("#viewSavedArticles").on("click", function(e){
 		e.preventDefault();
-
 		window.location.href = "/articles/save/user/" + localStorage.getItem("id");
-	// 	$.ajax({
-	// 		method: "GET",
-	// 		url: "/articles/save",
-	// 		data: { userId: localStorage.getItem("id") }
-	// 	}).then(function(result) {
-	// 		console.log("Show save articles");
-	// 	});
+	});
+
+	// Remove articles from favorites
+	$(".deleteButton").on("click", function(e){
+		e.preventDefault();
+		let data = {
+			articleId: $(this).data("id"),
+			userId: localStorage.getItem("id")
+		};
+		$.ajax({
+			method: "PUT",
+			url: "/article/update",
+			data: data
+		}).then(function(){
+			location.reload();
+		});
 	});
 
 	// Add click event to submit button and save comment into mongoDB
