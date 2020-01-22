@@ -1,22 +1,22 @@
 <div class="container">
   <button id="scrapeButton">Scrape</button>
-  <button id="viewSavedArticles">View Save Articles</button>
   <section class="articles" style="display: flex; flex-wrap: wrap; justify-content: center">
     {{#each articles}}
-    <div class="article" style="padding: 15px; width: 300px; margin: 10px; border-radius: 10px; box-shadow: 2px 3px 6px rgba(0,0,0,0.2)">
-      <img class="article__image" src={{this.imgUrl}} width="100%" style="overflow: hidden; border-radius: 10px;"/>
+    <div class="article"
+      style="padding: 15px; width: 300px; margin: 10px; border-radius: 10px; box-shadow: 2px 3px 6px rgba(0,0,0,0.2)">
+      <img class="article__image" src={{this.imgUrl}} width="100%" style="overflow: hidden; border-radius: 10px;" />
       <div class="article__title">
         <h4>{{this.title}}</h4>
       </div>
       <div class="article__summary">
         <p>{{this.summary}}</p>
       </div>
-      {{!-- <form>
+      <form>
         <label>Comment:</label>
         <input type="text" class="comment">
         <button class="saveComment" data-id={{this._id}}>Send</button>
-      </form> --}}
-      <button class="saveArticleButton" data-id={{this._id}}>Save</button>
+      </form>
+      {{!-- <button class="saveButton" data-id={{this._id}}>Save</button> --}}
     </div>
     {{/each}}
   </section>

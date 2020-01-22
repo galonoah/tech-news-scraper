@@ -1,8 +1,9 @@
 $(function() {
 	let areArticlesEmpty = $(".articles").children().length === 0;
-	if (localStorage.id && areArticlesEmpty) {
-		window.location.href = "/user/" + localStorage.getItem("id");
-	} else if (!localStorage.id) {
+
+	if (localStorage.id) {
+		console.log("Get associated articles to user");
+	} else {
 		$.ajax({
 			method: "POST",
 			url: "/user"
@@ -14,10 +15,41 @@ $(function() {
 	$("#scrapeButton").on("click", function() {
 		$.ajax({
 			method: "GET",
-			url: "/scrape/user/" + localStorage.getItem("id")
+			url: "/scrape"
 		}).then(function(result) {
-			window.location.href = "/user/" + localStorage.getItem("id");
+			console.log("Getting Articles...")
+			// window.location.href = "/user/" + localStorage.getItem("id");
 		});
+	});
+
+	$(".saveArticleButton").on("click", function(e){
+		e.preventDefault();
+
+		let data = {
+			articleId: $(this).data("id"),
+			userId: localStorage.getItem("id")
+		}
+
+		$.ajax({
+			method: "POST",
+			url: "/articles/save",
+			data: data
+		}).then(function(result){
+			console.log("Article saved")
+		});
+	});
+
+	$("#viewSavedArticles").on("click", function(e){
+		e.preventDefault();
+
+		window.location.href = "/articles/save/user/" + localStorage.getItem("id");
+	// 	$.ajax({
+	// 		method: "GET",
+	// 		url: "/articles/save",
+	// 		data: { userId: localStorage.getItem("id") }
+	// 	}).then(function(result) {
+	// 		console.log("Show save articles");
+	// 	});
 	});
 
 	// Add click event to submit button and save comment into mongoDB

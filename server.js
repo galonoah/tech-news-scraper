@@ -29,24 +29,24 @@ mongoose.connect("mongodb://localhost/mongoHeadlines", { useNewUrlParser: true }
 
 // Root Route
 app.get("/", function(req, res){
-  res.render("index");
+  res.redirect("/articles");
 });
 
-// A Get route to to render users' articles
-app.get("/user/:id", function(req, res){
-  db.User.findOne({_id: req.params.id})
-    .populate("articles")
-    .then(function(userData){
+// // A Get route to to render users' articles
+// app.get("/user/:id", function(req, res){
+//   db.User.findOne({_id: req.params.id})
+//     .populate("articles")
+//     .then(function(userData){
 
-      let articlesArray = [];
-      userData.articles.forEach(article => articlesArray.push(article.toObject()));
-      
-			res.render("index", {articles: articlesArray});
-    })
-    .catch(function(error){
-      console.log(error);
-    });
-});
+//       // let articlesArray = [];
+//       // userData.articles.forEach(article => articlesArray.push(article.toObject()));
+//       let articlesArray = userData.articles.map(article => article.toObject());
+// 			res.render("index", {articles: articlesArray});
+//     })
+//     .catch(function(error){
+//       console.log(error);
+//     });
+// });
 
 // User route
 app.post("/user", function(req, res){
@@ -60,7 +60,7 @@ app.post("/user", function(req, res){
 });
 
 // A GET route for scraping the 'Next Web' website
-app.get("/scrape/user/:id", function(req, res) {
+app.get("/scrape", function(req, res) {
 	axios.get("https://thenextweb.com/latest/").then(function(response) {
 		var $ = cheerio.load(response.data);
 
@@ -88,37 +88,67 @@ app.get("/scrape/user/:id", function(req, res) {
       // Save article to database
 			db.Article.create(articleData)
 				.then(article =>{
-          return db.User.findOneAndUpdate({_id: req.params.id}, { $push: { articles: article._id } }, { new: true });
+          console.log(article);
         })
-        .then(result=> console.log(result))
 				.catch(error => {
           if (error.name === "MongoError" && error.code === 11000) {
-            // Log error message for articles duplicate titles
+						// Log error message for articles duplicate titles
 						console.log(error.errmsg);
 					} else {
 						console.log(error);
 					}
 				});
     })
-		res.end();
+		res.redirect("/articles");
 	});
 });
 
-// // Route for getting all Articles from mongoDB
-// app.get("/articles", function(req, res) {
+// Route for getting all Articles from mongoDB
+app.get("/articles", function(req, res) {
 
-//   db.Article.find({})
-//     .then(articles => {
-//       // Convert each article into a plain javascript object to resolve issue:
-//       // Handlebars: Access has been denied to resolve the property <field name> 
-//       // because it is not an "own property" of its parent.
-//       let articlesArray = [];
-//       articles.forEach(article => articlesArray.push(article.toObject()));
+  db.Article.find({})
+    .then(articles => {
+      // Convert each article into a plain javascript object to resolve issue:
+      // Handlebars: Access has been denied to resolve the property <field name> 
+      // because it is not an "own property" of its parent.
+      let articlesArray = [];
+      articles.forEach(article => articlesArray.push(article.toObject()));
 
-//       res.render("index", {articles: articlesArray});
-//     })
-//     .catch(error => res.json(error));
-// });
+      res.render("index", {articles: articlesArray});
+    })
+    .catch(error => res.json(error));
+});
+
+app.post("/articles/save", function(req, res){
+	db.User.findOneAndUpdate({ _id: req.body.userId }, { $push: { articles: req.body.articleId } }, { new: true })
+	.then(function(result){
+		console.log(result);
+	})
+	.catch(function(error){
+		console.log(error);
+	})
+	res.end();
+});
+
+app.get("/articles/save/user/:id", function(req, res){
+	db.User.findOne({_id: req.params.id})
+		.populate("articles")
+		.then(function(userArticles){
+    // console.log("TCL: userArticles", userArticles)
+			let articlesArray; 
+			
+			if (userArticles) {
+				 articlesArray = userArticles.articles.map(article => article.toObject()) || [];
+			} else {
+				articlesArray = [];
+			}
+
+			res.render("saved-articles", {articles: articlesArray})
+		})
+		.catch(function(error){
+			console.log(error);
+		});
+});
 
 // Route for grabbing a specific Article by id, populate it with its comments
 // app.get("/articles/:id", function(req, res) {
