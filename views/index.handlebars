@@ -1,7 +1,6 @@
 <div class="container">
   <button id="scrapeButton">Scrape</button>
   <section class="articles" style="display: flex; flex-wrap: wrap; justify-content: center">
-
     {{#each articles}}
     <div class="article" style="padding: 15px; width: 300px; margin: 10px; border-radius: 10px; box-shadow: 2px 3px 6px rgba(0,0,0,0.2)">
       <img class="article__image" src={{this.imgUrl}} width="100%" style="overflow: hidden; border-radius: 10px;"/>
@@ -19,5 +18,4 @@
     </div>
     {{/each}}
   </section>
-
 </div>
