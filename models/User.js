@@ -8,12 +8,6 @@ var UserSchema = new Schema({
 			type: Schema.Types.ObjectId,
 			ref: "Article"
 		}
-	],
-	comments: [
-		{
-			type: Schema.Types.ObjectId,
-			ref: "Comment"
-		}
 	]
 });
 
