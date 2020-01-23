@@ -106,13 +106,25 @@ app.get("/articles", function(req, res) {
 
 // Save articles to favorites
 app.post("/articles/save", function(req, res){
-	db.User.findByIdAndUpdate({ _id: req.body.userId }, { $push: { articles: req.body.articleId } }, { new: true })
-	.then(function(result){
-		console.log("Article save to favorites")
-	})
-	.catch(function(error){
-		console.log(error);
-	})
+
+	db.User.findById({_id: req.body.userId})
+		.then(function(userData){
+			// Check if article exist in users' articles list
+			// return boolean confirmation
+		 	return userData.articles.includes(req.body.articleId);
+		})
+		.then(function(articleSaved){
+			// if article is not in user's favorites, then add article
+				if(!articleSaved){
+					return db.User.findByIdAndUpdate({ _id: req.body.userId }, { $push: { articles: req.body.articleId } }, { new: true })
+				}
+		})
+		.then(function(result) {
+				console.log("Favorite articles modified");
+		})
+		.catch(function(error){
+			console.log(error);
+		})
 	res.end();
 });
 
