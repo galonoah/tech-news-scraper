@@ -218,6 +218,6 @@ app.put("/comment/:id", function(req, res) {
 
 app.get("*", (req, res) => res.redirect("/articles"));
 
-app.listen(3000, function() {
-	console.log("App running on port " + 3000);
+app.listen(PORT, function() {
+	console.log("App running on port " + PORT);
 });
