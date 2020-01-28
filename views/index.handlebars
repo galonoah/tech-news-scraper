@@ -1,18 +1,48 @@
-<div class="container">
-  <button id="scrapeButton">Scrape</button>
-  <button id="viewSavedArticles">View Save Articles</button>
-  <section class="articles" style="display: flex; flex-wrap: wrap; justify-content: center">
-    {{#each articles}}
-    <div class="article" style="padding: 15px; width: 300px; margin: 10px; border-radius: 10px; box-shadow: 2px 3px 6px rgba(0,0,0,0.2)">
-      <a href="{{this.url}}"><img class="article__image" src={{this.imgUrl}} width="100%" style="overflow: hidden; border-radius: 10px;"/></a>
-      <div class="article__title">
-        <a href="{{this.url}}"><h4>{{this.title}}</h4></a>
-      </div>
-      <div class="article__summary">
-        <p>{{this.summary}}</p>
-      </div>
-      <button class="saveArticleButton" data-id={{this._id}}>Save</button>
+{{!-- Nabvar --}}
+<div class="ui inverted menu">
+  <div class="ui container">
+    <a href="/" class="header item">
+      <img class="ui tiny image" src="/img/logo.png">
+    </a>
+    <div class="right menu">
+      <a id="scrapeButton" class="item">Scrape News</a>
+      <a id="viewSavedArticles" class="item">Favorites</a>
     </div>
-    {{/each}}
-  </section>
+  </div>
+</div>
+{{!-- Main Content --}}
+<div class="ui container">
+  {{#if isEmpty}}
+    <div class="ui two column centered grid">
+      <div class="column">
+        <div class="ui massive compact floating message">
+          <p class="aligned center">
+            Try to scrape new articles!
+          </p>
+        </div>
+      </div>
+    </div>
+  {{else}}
+    <section class="ui three stackable cards articles">
+      {{#each articles}}
+      <div class="ui raised card article">
+        <div class="image">
+          <a href="{{this.url}}"><img class="ui fluid image article__image" src={{this.imgUrl}} /></a>
+        </div>
+        <div class="content">
+          <a href="{{this.url}}" class="header">
+            <div class="header">{{this.title}}</div>
+          </a>
+          <div class="description article_summary">
+            <p>{{this.summary}}</p>
+          </div>
+        </div>
+        <div class="ui bottom attached button saveArticleButton" data-id={{this._id}}>
+          <i class="add icon"></i>
+          Add to Favorites
+        </div>
+      </div>
+      {{/each}}
+    </section>
+  {{/if}}
 </div>

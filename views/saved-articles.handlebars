@@ -1,30 +1,71 @@
-<div class="container">
-  <a href="/articles">Home Page</a>
-  <h2>Save Articles</h2>
-  <section class="articles" style="display: flex; flex-wrap: wrap; justify-content: center">
+{{!-- Nabvar --}}
+<div class="ui inverted menu">
+  <div class="ui container">
+    <a href="/" class="header item">
+      <img class="ui tiny image" src="/img/logo.png">
+    </a>
+    <div class="right menu">
+      <a href="/" class="item">Home</a>
+    </div>
+  </div>
+</div>
+{{!-- Main Content --}}
+<div class="ui container">
+  {{#if isEmpty}}
+  <div class="ui two column centered grid">
+    <div class="column">
+      <div class="ui massive compact floating message">
+        <p class="aligned center">
+          No saved articles available!
+        </p>
+      </div>
+    </div>
+  </div>
+  {{else}}
+  <section class="ui three stackable cards articles">
     {{#each articles}}
-    <div class="article"
-      style="padding: 15px; width: 300px; margin: 10px; border-radius: 10px; box-shadow: 2px 3px 6px rgba(0,0,0,0.2)">
-      <a href="{{this.url}}"><img class="article__image" src={{this.imgUrl}} width="100%" style="overflow: hidden; border-radius: 10px;" /></a>
-      <div class="article__title">
-        <a href="{{this.url}}"><h4>{{this.title}}</h4></a>
+    <div class="ui raised card article">
+      <div class="image">
+        <a href="{{this.url}}"><img class="ui fluid image article__image" src={{this.imgUrl}} /></a>
       </div>
-      <div class="article__summary">
-        <p>{{this.summary}}</p>
+      <div class="content">
+        <a href="{{this.url}}" class="header">
+          <div class="header">{{this.title}}</div>
+        </a>
+        <div class="description article_summary">
+          <p>{{this.summary}}</p>
+        </div>
       </div>
-      <button class="deleteButton" data-id={{this._id}}>Delete</button>
-      <button class="viewCommentsButton" data-id={{this._id}}>Comments</button>
+      <div class="extra content">
+        <a>
+          <span class="left floated comment viewCommentsButton" data-id={{this._id}}>
+            <i class="comment icon"></i>
+            Comments
+          </span>
+        </a>
+        <a>
+          <span class="right floated trash deleteButton" data-id={{this._id}}>
+            <i class="trash icon"></i>
+            Delete
+          </span>
+        </a>
+      </div>
     </div>
     {{/each}}
   </section>
-
-  <div class="comments">
-    <ul class="comments__list"></ul>
-    <form>
-      <label>Comment:</label>
-      <input type="text" class="comment">
-      <button class="saveComment">Send</button>
-    </form>
-  </div>
-
+  {{/if}}
 </div>
+{{!-- Modal Article Comments --}}
+<div class="ui modal">
+  <div class="ui segment padded comments">
+    <div class="comment comments__list"></div>
+    <div class="ui form">
+      <div class="field">
+        <label>Comment: </label>
+        <textarea rows="2" class="comment"></textarea>
+        <button class="ui button saveComment">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+

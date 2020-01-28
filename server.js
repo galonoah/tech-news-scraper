@@ -97,9 +97,9 @@ app.get("/articles", function(req, res) {
       // Handlebars: Access has been denied to resolve the property <field name> 
 			// because it is not an "own property" of its parent.
       let articlesArray = [];
-      articles.forEach(article => articlesArray.push(article.toObject()));
+			articles.forEach(article => articlesArray.push(article.toObject()));
 
-      res.render("index", {articles: articlesArray});
+      res.render("index", {articles: articlesArray, isEmpty: !articlesArray.length});
     })
     .catch(error => res.json(error));
 });
@@ -139,7 +139,7 @@ app.get("/articles/save/user/:id", function(req, res){
 			} else {
 				articlesArray = [];
 			}
-			res.render("saved-articles", {articles: articlesArray})
+			res.render("saved-articles", { articles: articlesArray, isEmpty: !articlesArray.length });
 		})
 		.catch(function(error){
 			console.log(error);

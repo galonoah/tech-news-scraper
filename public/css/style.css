@@ -1,0 +1,5 @@
+.article_summary > p {
+  height: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

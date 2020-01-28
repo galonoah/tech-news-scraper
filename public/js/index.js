@@ -63,7 +63,6 @@ $(function() {
 	// Add click event to submit button and save comment into mongoDB
 	$(".saveComment").on("click", function(e) {
 		e.preventDefault();
-
 		let comment = $(this)
 			.siblings(".comment")
 			.val();
@@ -86,6 +85,7 @@ $(function() {
 
 	// Show comments for specific article
 	$(".viewCommentsButton").on("click", function(){
+			$(".ui.modal").modal("show");
 		articleId = $(this).data("id");
 		$(".saveComment").attr("data-id", articleId);
 		showComments(articleId);
@@ -110,14 +110,17 @@ $(function() {
 			}).then(function(result) {
 				$(".comments__list").empty();
 				for (let comments of result) {
-					let button = $("<button>").text("X").attr({
+					let button = $("<a>").html("<i class='trash icon'></i>").attr({
 						"data-id": comments._id,
 						"class": "removeComment"
 					});
-					let list = $("<li>").text(comments.comment);
-					let span = $("<span>").text(new Date(comments.dateCreated).toLocaleDateString({ formatMatcher: "basic" }));
-					list.append(span, button);
-					$(".comments__list").append(list);
+					let content = $("<div>").addClass("content");
+					let text = $("<div>").addClass("header");
+					let date = $("<div>").addClass("date");
+					text.text(comments.comment);
+					date.text(new Date(comments.dateCreated).toLocaleDateString({ formatMatcher: "basic" }));
+					content.append(text, date, button);
+					$(".comments__list").append(content);
 				}
 			});
 	}
