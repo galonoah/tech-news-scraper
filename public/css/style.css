@@ -3,3 +3,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.trash.icon {
+  margin: 0 !important;
+}

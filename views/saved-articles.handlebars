@@ -56,16 +56,19 @@
   {{/if}}
 </div>
 {{!-- Modal Article Comments --}}
-<div class="ui modal">
+<div class="ui tiny modal">
   <div class="ui segment padded comments">
-    <div class="comment comments__list"></div>
-    <div class="ui form">
+  <h2 class="header">Comments</h2>
+    <div class="ui stacked segments middle aligned divided list comments__list"></div>
+    <div class="ui reply form">
       <div class="field">
-        <label>Comment: </label>
-        <textarea rows="2" class="comment"></textarea>
-        <button class="ui button saveComment">Submit</button>
+        <textarea class="comment-text"></textarea>
+      </div>
+      <div class="ui primary submit labeled icon tiny button saveComment">
+        <i class="icon edit"></i> Add Comment
       </div>
     </div>
   </div>
 </div>
+
 

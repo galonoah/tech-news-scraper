@@ -6,7 +6,7 @@ $(function() {
 			url: "/user"
 		}).then(function(result) {
 			localStorage.setItem("id", result._id);
-		})
+		});
 	}
 
 	// Click even to scrape articles
@@ -20,31 +20,31 @@ $(function() {
 	});
 
 	// Save articles to favorites
-	$(".saveArticleButton").on("click", function(e){
+	$(".saveArticleButton").on("click", function(e) {
 		e.preventDefault();
 
 		let data = {
 			articleId: $(this).data("id"),
 			userId: localStorage.getItem("id")
-		}
+		};
 
 		$.ajax({
 			method: "POST",
 			url: "/articles/save",
 			data: data
-		}).then(function(result){
-			console.log("Article saved")
+		}).then(function(result) {
+			console.log("Article saved");
 		});
 	});
-	
+
 	// View Saved Articles
-	$("#viewSavedArticles").on("click", function(e){
+	$("#viewSavedArticles").on("click", function(e) {
 		e.preventDefault();
 		window.location.href = "/articles/save/user/" + localStorage.getItem("id");
 	});
 
 	// Remove articles from favorites
-	$(".deleteButton").on("click", function(e){
+	$(".deleteButton").on("click", function(e) {
 		e.preventDefault();
 		let data = {
 			articleId: $(this).data("id"),
@@ -54,7 +54,7 @@ $(function() {
 			method: "PUT",
 			url: "/article/update",
 			data: data
-		}).then(function(){
+		}).then(function() {
 			location.reload();
 		});
 	});
@@ -64,7 +64,8 @@ $(function() {
 	$(".saveComment").on("click", function(e) {
 		e.preventDefault();
 		let comment = $(this)
-			.siblings(".comment")
+			.siblings(".field")
+			.children(".comment-text")
 			.val();
 
 		// Make Post request to save comment to DB
@@ -79,20 +80,21 @@ $(function() {
 
 		// Clear input comment
 		$(this)
-			.siblings(".comment")
+			.siblings(".field")
+			.children(".comment-text")
 			.val("");
 	});
 
 	// Show comments for specific article
-	$(".viewCommentsButton").on("click", function(){
-			$(".ui.modal").modal("show");
+	$(".viewCommentsButton").on("click", function() {
+		$(".ui.modal").modal("show");
 		articleId = $(this).data("id");
 		$(".saveComment").attr("data-id", articleId);
 		showComments(articleId);
 	});
 
 	// Delete comment
-	$(".comments__list").on("click", ".removeComment",  function() {
+	$(".comments__list").on("click", ".removeComment", function() {
 		$.ajax({
 			method: "PUT",
 			url: "/comment/" + $(this).data("id")
@@ -103,25 +105,37 @@ $(function() {
 	});
 
 	// Function gets all comments from specific article
-	function showComments(articleId){
-			$.ajax({
-				method: "GET",
-				url: "/articles/" + articleId
-			}).then(function(result) {
-				$(".comments__list").empty();
+	function showComments(articleId) {
+		$.ajax({
+			method: "GET",
+			url: "/articles/" + articleId
+		}).then(function(result) {
+			$(".comments__list").empty();
+
+			if (result.length) {
 				for (let comments of result) {
-					let button = $("<a>").html("<i class='trash icon'></i>").attr({
-						"data-id": comments._id,
-						"class": "removeComment"
-					});
-					let content = $("<div>").addClass("content");
-					let text = $("<div>").addClass("header");
-					let date = $("<div>").addClass("date");
-					text.text(comments.comment);
+					let item = $("<div>").addClass("ui clearing segment");
+					let button = $("<button>")
+						.html("<i class='trash icon'></i>")
+						.attr({
+							"data-id": comments._id,
+							class: "removeComment"
+						});
+					button.addClass("mini ui right floated red button");
+
+					let content = $("<div>").addClass("ui segment content");
+					content.text(comments.comment);
+
+					let date = $("<div>").addClass("ui mini label");
 					date.text(new Date(comments.dateCreated).toLocaleDateString({ formatMatcher: "basic" }));
-					content.append(text, date, button);
-					$(".comments__list").append(content);
+
+					item.append(button, date, content);
+					$(".comments__list").append(item);
 				}
-			});
+			} else {
+				$(".comments__list").removeClass("segments");
+				$(".comments__list").append("<div>").html("<h4 class='ui header'>No Comments</h4>");
+			}
+		});
 	}
 });
