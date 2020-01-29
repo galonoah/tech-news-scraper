@@ -25,7 +25,7 @@
   {{else}}
     <section class="ui three stackable cards articles">
       {{#each articles}}
-      <div class="ui raised card article">
+      <div class="ui raised card article" data-id={{this._id}}>
         <div class="image">
           <a href="{{this.url}}"><img class="ui fluid image article__image" src={{this.imgUrl}} /></a>
         </div>

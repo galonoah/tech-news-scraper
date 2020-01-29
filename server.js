@@ -132,7 +132,7 @@ app.post("/articles/save", function(req, res) {
 });
 
 // View Saved Articles
-app.get("/articles/save/user/:id", function(req, res) {
+app.get("/articles/save/user/:id/:check?", function(req, res) {
 	db.User.findById({ _id: req.params.id })
 		.populate("articles")
 		.then(function(userArticles) {
@@ -142,7 +142,11 @@ app.get("/articles/save/user/:id", function(req, res) {
 			} else {
 				articlesArray = [];
 			}
-			res.render("saved-articles", { articles: articlesArray, isEmpty: !articlesArray.length });
+			if (!req.params.check) {
+				res.render("saved-articles", { articles: articlesArray, isEmpty: !articlesArray.length });
+			} else {
+				res.json(articlesArray);
+			}
 		})
 		.catch(function(error) {
 			console.log(error);

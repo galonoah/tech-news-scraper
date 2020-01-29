@@ -34,6 +34,7 @@ $(function() {
 			data: data
 		}).then(function(result) {
 			console.log("Article saved");
+			disableButtonforSavedArticles();
 		});
 	});
 
@@ -138,4 +139,24 @@ $(function() {
 			}
 		});
 	}
+	function disableButtonforSavedArticles() {
+		// Disable 'Add to Favorites' button
+		$.ajax({
+			method: "GET",
+			url: "/articles/save/user/" + localStorage.getItem("id") + "/true"
+		}).then(function(result) {
+				let savedArticlesIds = result.map(function(article){
+						return article._id;
+				});
+				$(".articles")
+					.children()
+					.each(function(i, el) {
+						if (savedArticlesIds.includes(el.dataset.id)){
+							 $("[data-id=" + el.dataset.id + "]").find(".button").text("Saved");
+							 $("[data-id=" + el.dataset.id + "]").find(".button").addClass("disabled");
+						}
+					});
+		});
+	}
+	disableButtonforSavedArticles();
 });
