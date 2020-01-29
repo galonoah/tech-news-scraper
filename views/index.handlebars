@@ -13,36 +13,36 @@
 {{!-- Main Content --}}
 <div class="ui container">
   {{#if isEmpty}}
-    <div class="ui two column centered grid">
-      <div class="column">
-        <div class="ui massive compact floating message">
-          <p class="aligned center">
-            Try to scrape new articles!
-          </p>
-        </div>
+  <div class="ui two column centered grid">
+    <div class="column">
+      <div class="ui massive compact floating message">
+        <p class="aligned center">
+          Try to scrape new articles!
+        </p>
       </div>
     </div>
+  </div>
   {{else}}
-    <section class="ui three stackable cards articles">
-      {{#each articles}}
-      <div class="ui raised card article" data-id={{this._id}}>
-        <div class="image">
-          <a href="{{this.url}}"><img class="ui fluid image article__image" src={{this.imgUrl}} /></a>
-        </div>
-        <div class="content">
-          <a href="{{this.url}}" class="header">
-            <div class="header">{{this.title}}</div>
-          </a>
-          <div class="description article_summary">
-            <p>{{this.summary}}</p>
-          </div>
-        </div>
-        <div class="ui bottom attached button saveArticleButton" data-id={{this._id}}>
-          <i class="add icon"></i>
-          Add to Favorites
+  <section class="ui three stackable cards articles">
+    {{#each articles}}
+    <div class="ui raised card article" data-id={{this._id}}>
+      <div class="image">
+        <a href="{{this.url}}"><img class="ui fluid image article__image" src={{this.imgUrl}} /></a>
+      </div>
+      <div class="content">
+        <a href="{{this.url}}" class="header">
+          <div class="header">{{this.title}}</div>
+        </a>
+        <div class="description article_summary">
+          <p>{{this.summary}}</p>
         </div>
       </div>
-      {{/each}}
-    </section>
+      <div class="ui bottom attached button saveArticleButton" data-id={{this._id}}>
+        <i class="add icon"></i>
+        Add to Favorites
+      </div>
+    </div>
+    {{/each}}
+  </section>
   {{/if}}
 </div>
